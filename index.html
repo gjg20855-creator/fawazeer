@@ -1,15 +1,100 @@
-function tick() {
-    const currentTime = new Date();
-    console.log(`Current time: ${currentTime}`);
-}
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root { --p: #00b894; --bg: #f7f9fb; }
+        body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; direction: rtl; }
+        .app { width: 100%; max-width: 400px; background: white; border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); min-height: 500px; display: flex; flex-direction: column; }
+        .timer { background: #f0f0f0; display: inline-flex; align-items: center; padding: 8px 20px; border-radius: 50px; font-weight: bold; margin: 10px auto 25px; border: 1px solid #ddd; font-family: monospace; font-size: 1.2rem; }
+        .q-text { font-size: 1.3rem; font-weight: bold; margin-bottom: 30px; min-height: 70px; color: #2d3436; }
+        .opt { width: 100%; padding: 16px; margin-bottom: 12px; border: 2px solid #edf2f7; border-radius: 15px; cursor: pointer; transition: 0.2s; box-sizing: border-box; color: #4a5568; font-size: 1.1rem; }
+        .opt.active { border-color: var(--p); background: #f0fff4; color: var(--p); font-weight: bold; transform: scale(1.02); }
+        .footer-btn { background: var(--p); color: white; width: 100%; padding: 20px; border: none; border-radius: 15px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: auto; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div id="start-s">
+            <h1 style="color:var(--p); margin-bottom:10px;">فوازير</h1>
+            <p style="color:#666; margin-bottom:30px;">تحدي الثلاث أسئلة اليومي</p>
+            <button class="footer-btn" onclick="startQuiz()">ابدأ التحدي</button>
+        </div>
 
-function show() {
-    const message = `This is a message from the show function.`;
-    console.log(message);
-}
+        <div id="quiz-s" class="hidden">
+            <div class="timer" id="disp">00:00:00</div>
+            <div id="prog" style="color:#a0aec0; margin-bottom:10px; font-size:0.9rem">السؤال 1 من 3</div>
+            <div class="q-text" id="q-txt"></div>
+            <div id="opts"></div>
+            <button class="footer-btn" onclick="next()">إرسال</button>
+        </div>
 
-const question3 = {
-    question: 'What is the capital of France?',
-    answer: 'Paris',
-    options: ['Berlin', 'Madrid', 'Rome', 'Paris']
-};
+        <div id="end-s" class="hidden">
+            <h2 style="color:var(--p)">كفو! انتهيت</h2>
+            <p style="margin-bottom:5px;">وقتك الإجمالي هو:</p>
+            <h1 id="final" style="font-size:3rem; margin-top:0; color:#2d3436;"></h1>
+            <button class="footer-btn" onclick="location.reload()">إعادة المحاولة</button>
+        </div>
+    </div>
+
+    <script>
+        const qs = [
+            {q:"الأم قالت لبنتها 'ازهمي على أخوك' وش يعني؟", o:["اسأليه","هاوشيه","اعطيه","اتصلي عليه"], c:3},
+            {q:"وين موقع ملاهي القدية في السعودية؟", o:["مدينة القدية","البحر الأحمر","نيوم","ذا لاين"], c:0},
+            {q:"من هو صاحب لقب أبي هريرة؟", o:["عبدالرحمن بن صخر الدوسي","عثمان بن عفان","علي بن أبي طالب","أبي بكر الصديق"], c:0}
+        ];
+
+        let idx = 0, startT, interval, sel = null;
+
+        function startQuiz(){
+            document.getElementById('start-s').classList.add('hidden');
+            document.getElementById('quiz-s').classList.remove('hidden');
+            startT = performance.now();
+            interval = setInterval(tick, 10);
+            show();
+        }
+
+        function tick(){
+            let d = performance.now() - startT;
+            let s = Math.floor(d / 1000);
+            let ms = Math.floor((d % 1000) / 10);
+            document.getElementById('disp').innerText =
+                00:${s.toString().padStart(2,'0')}:${ms.toString().padStart(2,'0')};
+        }
+
+        function show(){
+            sel = null;
+            const q = qs[idx];
+            document.getElementById('q-txt').innerText = q.q;
+            document.getElementById('prog').innerText = السؤال ${idx+1} من ${qs.length};
+            const div = document.getElementById('opts');
+            div.innerHTML = '';
+            q.o.forEach((n,i)=>{
+                const b = document.createElement('div');
+                b.className = 'opt';
+                b.innerText = n;
+                b.onclick = () => {
+                    document.querySelectorAll('.opt').forEach(x=>x.className='opt');
+                    b.className = 'opt active';
+                    sel = i;
+                };
+                div.appendChild(b);
+            });
+        }
+
+        function next(){
+            if(sel === null) return alert("اختر إجابة أولاً!");
+            if(++idx < qs.length) show();
+            else {
+                clearInterval(interval);
+                document.getElementById('quiz-s').classList.add('hidden');
+                document.getElementById('end-s').classList.remove('hidden');
+                document.getElementById('final').innerText =
+                    document.getElementById('disp').innerText;
+            }
+        }
+    </script>
+</body>
+</html>
