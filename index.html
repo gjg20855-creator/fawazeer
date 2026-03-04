@@ -3,98 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تحدي الفوازير الذكي</title>
     <style>
-        :root { --p: #00b894; --bg: #f7f9fb; }
-        body { font-family: sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; direction: rtl; }
-        .app { width: 100%; max-width: 400px; background: white; border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 10px 20px rgba(0,0,0,0.05); min-height: 500px; display: flex; flex-direction: column; }
-        .timer { background: #f0f0f0; display: inline-flex; align-items: center; padding: 8px 20px; border-radius: 50px; font-weight: bold; margin: 10px auto 25px; border: 1px solid #ddd; font-family: monospace; font-size: 1.2rem; }
-        .q-text { font-size: 1.3rem; font-weight: bold; margin-bottom: 30px; min-height: 70px; color: #2d3436; }
-        .opt { width: 100%; padding: 16px; margin-bottom: 12px; border: 2px solid #edf2f7; border-radius: 15px; cursor: pointer; transition: 0.2s; box-sizing: border-box; color: #4a5568; font-size: 1.1rem; }
-        .opt.active { border-color: var(--p); background: #f0fff4; color: var(--p); font-weight: bold; transform: scale(1.02); }
-        .footer-btn { background: var(--p); color: white; width: 100%; padding: 20px; border: none; border-radius: 15px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: auto; }
-        .hidden { display: none; }
+        :root { --p: #00b894; --bg: #f7f9fb; --dark: #2d3436; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; }
+        .app { width: 100%; max-width: 450px; background: white; border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); position: relative; min-height: 600px; display: flex; flex-direction: column; }
+        
+        /* أيقونة الإعدادات */
+        .admin-btn { position: absolute; top: 20px; left: 20px; cursor: pointer; opacity: 0.3; transition: 0.3s; }
+        .admin-btn:hover { opacity: 1; }
+
+        .timer { background: #f0f0f0; display: inline-flex; padding: 10px 25px; border-radius: 50px; font-weight: bold; margin: 10px auto 30px; border: 2px solid #ddd; font-family: monospace; font-size: 1.5rem; color: var(--dark); }
+        .q-text { font-size: 1.4rem; font-weight: bold; margin-bottom: 30px; color: var(--dark); min-height: 80px; }
+        
+        .opt { width: 100%; padding: 18px; margin-bottom: 15px; border: 2px solid #edf2f7; border-radius: 15px; cursor: pointer; transition: 0.2s; box-sizing: border-box; color: #4a5568; font-size: 1.1rem; text-align: right; }
+        .opt.active { border-color: var(--p); background: #f0fff4; color: var(--p); font-weight: bold; transform: translateY(-2px); box-shadow: 0 5px 10px rgba(0,184,148,0.1); }
+        
+        .footer-btn { background: var(--p); color: white; width: 100%; padding: 20px; border: none; border-radius: 15px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: auto; transition: 0.3s; }
+        .footer-btn:active { transform: scale(0.98); }
+
+        /* لوحة التحكم */
+        #admin-screen { text-align: right; overflow-y: auto; max-height: 80vh; padding: 10px; }
+        .admin-input { width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .hidden { display: none !important; }
+        .history { font-size: 0.9rem; color: #888; margin-top: 15px; }
     </style>
 </head>
 <body>
-    <div class="app">
-        <div id="start-s">
-            <h1 style="color:var(--p); margin-bottom:10px;">فوازير</h1>
-            <p style="color:#666; margin-bottom:30px;">تحدي الثلاث أسئلة اليومي</p>
-            <button class="footer-btn" onclick="startQuiz()">ابدأ التحدي</button>
-        </div>
 
-        <div id="quiz-s" class="hidden">
-            <div class="timer" id="disp">00:00:00</div>
-            <div id="prog" style="color:#a0aec0; margin-bottom:10px; font-size:0.9rem">السؤال 1 من 3</div>
-            <div class="q-text" id="q-txt"></div>
-            <div id="opts"></div>
-            <button class="footer-btn" onclick="next()">إرسال</button>
-        </div>
+<div class="app">
+    <div class="admin-btn" onclick="toggleAdmin()">⚙️</div>
 
-        <div id="end-s" class="hidden">
-            <h2 style="color:var(--p)">كفو! انتهيت</h2>
-            <p style="margin-bottom:5px;">وقتك الإجمالي هو:</p>
-            <h1 id="final" style="font-size:3rem; margin-top:0; color:#2d3436;"></h1>
-            <button class="footer-btn" onclick="location.reload()">إعادة المحاولة</button>
-        </div>
+    <div id="start-s">
+        <h1 style="color:var(--p); margin-top: 50px;">فوازير اليوم</h1>
+        <p style="color:#666;">تحدي السرعة والذكاء</p>
+        <div id="last-score" class="history"></div>
+        <button class="footer-btn" onclick="start()">ابدأ التحدي</button>
     </div>
 
-    <script>
-        const qs = [
-            {q:"الأم قالت لبنتها 'ازهمي على أخوك' وش يعني؟", o:["اسأليه","هاوشيه","اعطيه","اتصلي عليه"], c:3},
-            {q:"وين موقع ملاهي القدية في السعودية؟", o:["مدينة القدية","البحر الأحمر","نيوم","ذا لاين"], c:0},
-            {q:"من هو صاحب لقب أبي هريرة؟", o:["عبدالرحمن بن صخر الدوسي","عثمان بن عفان","علي بن أبي طالب","أبي بكر الصديق"], c:0}
-        ];
+    <div id="quiz-s" class="hidden">
+        <div class="timer" id="disp">00:00:00</div>
+        <div id="prog" style="color:#a0aec0; margin-bottom:10px;">سؤال 1 من 3</div>
+        <div class="q-text" id="q-txt">جاري التحميل...</div>
+        <div id="opts"></div>
+        <button class="footer-btn" onclick="next()">إرسال الإجابة</button>
+    </div>
 
-        let idx = 0, startT, interval, sel = null;
+    <div id="end-s" class="hidden">
+        <h2 style="color:var(--p); margin-top:50px;">كفو! انتهيت</h2>
+        <p>وقتك الإجمالي:</p>
+        <h1 id="final" style="font-size:3.5rem; color:var(--dark); margin: 10px 0;"></h1>
+        <button class="footer-btn" onclick="location.reload()">إعادة المحاولة</button>
+    </div>
 
-        function startQuiz(){
-            document.getElementById('start-s').classList.add('hidden');
-            document.getElementById('quiz-s').classList.remove('hidden');
-            startT = performance.now();
-            interval = setInterval(tick, 10);
-            show();
+    <div id="admin-screen" class="hidden">
+        <h2 style="text-align:center">إعداد الأسئلة</h2>
+        <div id="editor-container"></div>
+        <button class="footer-btn" onclick="saveQuestions()">حفظ الأسئلة وإغلاق</button>
+    </div>
+</div>
+
+<script>
+    // الأسئلة الافتراضية
+    let defaultQs = [
+        {q:"الأم قالت لبنتها 'ازهمي على أخوك' وش يعني؟", o:["اسأليه","هاوشيه","اعطيه","اتصلي عليه"], c:3},
+        {q:"وين موقع ملاهي القدية في السعودية؟", o:["مدينة القدية","البحر الأحمر","نيوم","ذا لاين"], c:0},
+        {q:"من هو صاحب لقب أبي هريرة؟", o:["عبدالرحمن بن صخر الدوسي","عثمان بن عفان","علي بن أبي طالب","أبي بكر الصديق"], c:0}
+    ];
+
+    let qs = JSON.parse(localStorage.getItem('myQs')) || defaultQs;
+    let idx=0, startT, interval, sel=null;
+
+    // تشغيل التطبيق
+    function start(){
+        document.getElementById('start-s').classList.add('hidden');
+        document.getElementById('quiz-s').classList.remove('hidden');
+        startT = performance.now();
+        interval = setInterval(tick, 10);
+        show();
+    }
+
+    function tick(){
+        let d = performance.now()-startT;
+        let s = Math.floor(d/1000), ms = Math.floor((d%1000)/10);
+        document.getElementById('disp').innerText = `00:${s.toString().padStart(2,'0')}:${ms.toString().padStart(2,'0')}`;
+    }
+
+    function show(){
+        sel=null; const q = qs[idx];
+        document.getElementById('q-txt').innerText = q.q;
+        document.getElementById('prog').innerText = `السؤال ${idx+1} من ${qs.length}`;
+        const div = document.getElementById('opts'); div.innerHTML='';
+        q.o.forEach((n,i)=>{
+            const b = document.createElement('div'); b.className='opt'; b.innerText=n;
+            b.onclick=()=>{ document.querySelectorAll('.opt').forEach(x=>x.className='opt'); b.className='opt active'; sel=i; };
+            div.appendChild(b);
+        });
+    }
+
+    function next(){
+        if(sel===null) return alert("اختر إجابة!");
+        if(++idx < qs.length) show();
+        else {
+            clearInterval(interval);
+            const finalTime = document.getElementById('disp').innerText;
+            document.getElementById('quiz-s').classList.add('hidden');
+            document.getElementById('end-s').classList.remove('hidden');
+            document.getElementById('final').innerText = finalTime;
+            localStorage.setItem('lastScore', finalTime);
         }
+    }
 
-        function tick(){
-            let d = performance.now() - startT;
-            let s = Math.floor(d / 1000);
-            let ms = Math.floor((d % 1000) / 10);
-            document.getElementById('disp').innerText =
-                00:${s.toString().padStart(2,'0')}:${ms.toString().padStart(2,'0')};
-        }
+    // وظائف لوحة التحكم
+    function toggleAdmin(){
+        document.getElementById('start-s').classList.add('hidden');
+        document.getElementById('admin-screen').classList.remove('hidden');
+        buildEditor();
+    }
 
-        function show(){
-            sel = null;
-            const q = qs[idx];
-            document.getElementById('q-txt').innerText = q.q;
-            document.getElementById('prog').innerText = السؤال ${idx+1} من ${qs.length};
-            const div = document.getElementById('opts');
-            div.innerHTML = '';
-            q.o.forEach((n,i)=>{
-                const b = document.createElement('div');
-                b.className = 'opt';
-                b.innerText = n;
-                b.onclick = () => {
-                    document.querySelectorAll('.opt').forEach(x=>x.className='opt');
-                    b.className = 'opt active';
-                    sel = i;
-                };
-                div.appendChild(b);
+    function buildEditor(){
+        const container = document.getElementById('editor-container');
+        container.innerHTML = '';
+        qs.forEach((q, i) => {
+            container.innerHTML += `
+                <div style="border-bottom:1px solid #eee; margin-bottom:20px; padding-bottom:10px;">
+                    <b>سؤال ${i+1}:</b>
+                    <input class="admin-input" id="q${i}" value="${q.q}">
+                    <b>الخيارات (الإجابة الصحيحة هي الأولى دائماً في التعديل):</b>
+                    ${q.o.map((opt, oi) => `<input class="admin-input" id="q${i}o${oi}" value="${opt}">`).join('')}
+                </div>`;
+        });
+    }
+
+    function saveQuestions(){
+        let newQs = [];
+        for(let i=0; i<3; i++){
+            let opts = [];
+            for(let j=0; j<4; j++) opts.push(document.getElementById(`q${i}o${j}`).value);
+            newQs.push({
+                q: document.getElementById(`q${i}`).value,
+                o: opts,
+                c: 0 // للتبسيط، نجعل الخيار الأول هو الصحيح دائماً عند التعديل
             });
         }
+        localStorage.setItem('myQs', JSON.stringify(newQs));
+        location.reload();
+    }
 
-        function next(){
-            if(sel === null) return alert("اختر إجابة أولاً!");
-            if(++idx < qs.length) show();
-            else {
-                clearInterval(interval);
-                document.getElementById('quiz-s').classList.add('hidden');
-                document.getElementById('end-s').classList.remove('hidden');
-                document.getElementById('final').innerText =
-                    document.getElementById('disp').innerText;
-            }
-        }
-    </script>
+    // إظهار آخر نتيجة
+    if(localStorage.getItem('lastScore')) {
+        document.getElementById('last-score').innerText = "آخر وقت: " + localStorage.getItem('lastScore');
+    }
+</script>
 </body>
 </html>
