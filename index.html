@@ -3,27 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تحدي الفوازير المطور</title>
+    <title>تحدي الفوازير - التحديث الجديد</title>
     <style>
-        :root { --p: #00b894; --bg: #f7f9fb; --dark: #2d3436; --err: #ff7675; }
+        :root { --p: #00b894; --bg: #f7f9fb; --dark: #2d3436; }
         body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; }
         .app { width: 100%; max-width: 450px; background: white; border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.1); min-height: 600px; display: flex; flex-direction: column; }
-        .timer { background: #f0f0f0; display: inline-flex; padding: 10px 25px; border-radius: 50px; font-weight: bold; margin: 10px auto 20px; border: 2px solid #ddd; font-family: monospace; font-size: 1.5rem; }
-        .q-text { font-size: 1.3rem; font-weight: bold; margin-bottom: 10px; color: var(--dark); }
+        .timer { background: #f0f0f0; display: inline-flex; padding: 10px 25px; border-radius: 50px; font-weight: bold; margin: 10px auto 20px; border: 2px solid #ddd; font-family: monospace; font-size: 1.8rem; color: var(--dark); }
+        .q-text { font-size: 1.4rem; font-weight: bold; margin-bottom: 5px; color: var(--dark); }
         .hint { color: #888; font-size: 0.9rem; margin-bottom: 20px; }
-        .opt { width: 100%; padding: 16px; margin-bottom: 12px; border: 2px solid #edf2f7; border-radius: 15px; cursor: pointer; transition: 0.2s; box-sizing: border-box; text-align: right; font-size: 1.1rem; }
+        .opt { width: 100%; padding: 18px; margin-bottom: 12px; border: 2px solid #edf2f7; border-radius: 15px; cursor: pointer; transition: 0.2s; box-sizing: border-box; text-align: right; font-size: 1.1rem; color: #4a5568; }
         .opt.active { border-color: var(--p); background: #f0fff4; color: var(--p); font-weight: bold; }
-        .footer-btn { background: var(--p); color: white; width: 100%; padding: 18px; border: none; border-radius: 15px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: auto; }
+        .footer-btn { background: var(--p); color: white; width: 100%; padding: 20px; border: none; border-radius: 15px; font-size: 1.2rem; font-weight: bold; cursor: pointer; margin-top: auto; }
         .hidden { display: none; }
-        .score-box { font-size: 1.5rem; margin: 20px 0; color: var(--dark); }
     </style>
 </head>
 <body>
 
 <div class="app">
     <div id="start-s">
-        <h1 style="color:var(--p); margin-top:50px;">فوازير</h1>
-        <p>أجب على الأسئلة بأسرع وقت ممكن!</p>
+        <h1 style="color:var(--p); margin-top:50px;">التحديث الجديد 🚀</h1>
+        <p>تحدي الأسئلة اليومي</p>
         <button class="footer-btn" onclick="start()">ابدأ التحدي</button>
     </div>
 
@@ -33,67 +32,67 @@
         <div class="q-text" id="q-txt"></div>
         <div class="hint" id="q-hint"></div>
         <div id="opts"></div>
-        <button class="footer-btn" onclick="checkAnswer()">إرسال</button>
+        <button class="footer-btn" onclick="checkAnswer()">إرسال الإجابة</button>
     </div>
 
     <div id="end-s" class="hidden">
-        <h2 style="color:var(--p); margin-top:30px;">انتهى التحدي!</h2>
-        <div class="score-box" id="score-txt"></div>
-        <p>الوقت المستغرق:</p>
-        <h1 id="final-time" style="font-size:3rem; margin:10px 0;"></h1>
-        <button class="footer-btn" onclick="location.reload()">محاولة مرة أخرى</button>
+        <h2 style="color:var(--p); margin-top:30px;">كفو! انتهيت</h2>
+        <div id="score-txt" style="font-size: 1.5rem; margin: 20px 0;"></div>
+        <p>وقتك الإجمالي:</p>
+        <h1 id="final-time" style="font-size:3.5rem; margin:10px 0;"></h1>
+        <button class="footer-btn" onclick="location.reload()">إعادة التحدي</button>
     </div>
 </div>
 
 <script>
- // --- منطقة تعديل الأسئلة لليوم ---
+    // --- الأسئلة المحدثة بناءً على صورك ---
     const qs = [
         {
-            q: "في أي يوم نحتفل فيه باليوم الوطني ؟",
-            o: ["23 مارس", "23 سبتمبر", "23 أكتوبر", "23 نوفمبر"],
-            c: [1], // الإجابة الصح: 23 سبتمبر
+            q: "أغنياء الصحابة 5، ولكن من هو أغناهم؟",
+            o: ["عبدالرحمن بن عوف", "الزبير بن العوام", "عثمان بن عفان", "سعد بن أبي وقاص"],
+            c: [0], // عبدالرحمن بن عوف
             multi: false
         },
         {
-            q: "ويصير بعد اول يوم رجيم؟",
-            o: ["نصمل", "نعيد اليوم الاول من جديد", "ناكل اكثر", "نحلي"],
-            c: [1], // الإجابة الصح: نعيد اليوم الاول من جديد
+            q: "كمّل المثل: ما يذوق العز خمام .....",
+            o: ["الوسايد", "المخدات", "اللحاف", "الكنب"],
+            c: [0], // الوسايد
             multi: false
         },
         {
-            q: "كيف تعيد او تهدي اللي تحبهم عن طريق تطبيقنا ؟",
-            o: ["تحويل جهات اتصال", "ارسل هدية", "ادخر فلوسي", "ارسل قطة"],
-            c: [0, 1], // هنا عدلت لك الكود ليكون فيه إجابتين صحيحة (تحويل جهات اتصال + ارسل هدية)
-            multi: true // فعلت خيار الاختيارات المتعددة لهذا السؤال
+            q: "متى تم إطلاق رمز الريال السعودي؟",
+            o: ["2024", "2025", "2023", "2020"],
+            c: [1], // 2025
+            multi: false
         }
     ];
-    // -------------------------------------------
-    let idx = 0, startT, interval, selectedOpts = [], correctCount = 0;
+
+    let idx = 0, startT, requestID, selectedOpts = [], correctCount = 0;
 
     function start() {
         document.getElementById('start-s').classList.add('hidden');
         document.getElementById('quiz-s').classList.remove('hidden');
         startT = performance.now();
-        interval = setInterval(tick, 10);
+        requestID = requestAnimationFrame(updateTimer);
         show();
     }
 
-    function tick() {
+    function updateTimer() {
         let d = performance.now() - startT;
-        let s = Math.floor(d/1000), ms = Math.floor((d%1000)/10);
-        document.getElementById('disp').innerText = `00:${s.toString().padStart(2,'0')}:${ms.toString().padStart(2,'0')}`;
+        let s = Math.floor(d / 1000);
+        let ms = Math.floor((d % 1000) / 10);
+        document.getElementById('disp').innerText = `00:${s.toString().padStart(2, '0')}:${ms.toString().padStart(2, '0')}`;
+        requestID = requestAnimationFrame(updateTimer);
     }
 
     function show() {
         selectedOpts = [];
         const q = qs[idx];
         document.getElementById('q-txt').innerText = q.q;
-        document.getElementById('q-hint').innerText = q.multi ? "(يمكنك اختيار أكثر من إجابة)" : "(اختر إجابة واحدة)";
+        document.getElementById('q-hint').innerText = q.multi ? "(اختر إجابتين صحيحة)" : "(اختر إجابة واحدة)";
         document.getElementById('prog').innerText = `السؤال ${idx+1} من ${qs.length}`;
-        
         const div = document.getElementById('opts');
         div.innerHTML = '';
-        
         q.o.forEach((n, i) => {
             const b = document.createElement('div');
             b.className = 'opt';
@@ -121,25 +120,17 @@
 
     function checkAnswer() {
         if (selectedOpts.length === 0) return alert("الرجاء اختيار إجابة!");
-        
         const q = qs[idx];
-        // التأكد أن الإجابات المختارة تطابق الإجابات الصحيحة تماماً
-        const isCorrect = q.c.length === selectedOpts.length && q.c.every(val => selectedOpts.includes(val));
-        
+        const isCorrect = q.c.length === selectedOpts.length && q.c.every(v => selectedOpts.includes(v));
         if (isCorrect) correctCount++;
-
-        if (++idx < qs.length) {
-            show();
-        } else {
-            finish();
-        }
+        if (++idx < qs.length) show(); else finish();
     }
 
     function finish() {
-        clearInterval(interval);
+        cancelAnimationFrame(requestID);
         document.getElementById('quiz-s').classList.add('hidden');
         document.getElementById('end-s').classList.remove('hidden');
-        document.getElementById('score-txt').innerText = `أجبت على ${correctCount} من أصل ${qs.length} صح!`;
+        document.getElementById('score-txt').innerText = `أجبت على ${correctCount} من ${qs.length} صح!`;
         document.getElementById('final-time').innerText = document.getElementById('disp').innerText;
     }
 </script>
